@@ -1,13 +1,13 @@
-resource "azurerm_linux_virtual_machine" "vm" {
-  name                            = var.vm_name
-  resource_group_name             = var.resource_name
-  location                        = var.location_name
-  size                            = var.size
-  admin_username                  = var.admin_username
-  network_interface_ids           = [azurerm_network_interface.nic.id]
-  disable_password_authentication = false
-  admin_password                  = var.admin_password
 
+resource "azurerm_linux_virtual_machine" "vm" {
+  name                  = var.vm_name
+  resource_group_name   = var.resource_name
+  location              = var.location_name
+  size                  = var.size
+  admin_username        = var.admin_username
+  network_interface_ids = [azurerm_network_interface.nic.id]
+  admin_password        = var.admin_password
+  disable_password_authentication = false
 
   os_disk {
     caching              = "ReadWrite"
@@ -16,27 +16,19 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   source_image_reference {
-    publisher = "canonical"
+    publisher = "Canonical"
     offer     = "0001-com-ubuntu-server-focal"
     sku       = "20_04-lts"
     version   = "latest"
   }
 
-#   connection {
-#     type     = "ssh"
-#     user     = var.admin_username
-#     password = var.admin_password
-#     host     = var.public_ip_address
-#   }
-
-  # provisioner "remote_exec" {
-  #   inline = [
-  #     "sudo apt-get update",
-  #     "sudo apt-get install -y nginx",
-  #     "sudo systemctl enable nginx",
-  #     "sudo systemctl start nginx"
-  #   ]
-  # }
-
- }
+  custom_data = base64encode(<<-EOF
+    #!/bin/bash
+    apt-get update -y
+    apt-get install -y nginx
+    systemctl enable nginx
+    systemctl start nginx
+EOF
+  )
+}
 
