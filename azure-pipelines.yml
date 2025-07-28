@@ -5,17 +5,17 @@ pool:
 
 stages:
   - stage: terraforminstall
-    displayName: terraforminstall
+    displayName: terraform app initiallize
     jobs:
       - job: terraforminstall
-        displayName: terraforminstall
+        displayName: terraform app install
         steps:
           - task: TerraformInstaller@1
             inputs:
               terraformVersion: 'latest'
 
           - task: TerraformTask@5
-            displayName: "terraforminit"
+            displayName: "terraform init"
             inputs:
               provider: 'azurerm'
               command: 'init'
@@ -33,15 +33,15 @@ stages:
 
   - stage: terraformplan
     jobs:
-      - job: terraforminstall
-        displayName: terraforminstall
+      - job: terraform_plan
+        displayName: execute plan
         steps:
           - task: TerraformInstaller@1
             inputs:
               terraformVersion: 'latest'
 
           - task: TerraformTask@5
-            displayName: "terraforminit"
+            displayName: "terraform init"
             inputs:
               provider: 'azurerm'
               command: 'init'
@@ -51,6 +51,7 @@ stages:
               backendAzureRmContainerName: 'statecontainer'
               backendAzureRmKey: 'vm.tfstate'
           - task: TerraformTask@5
+            displayName: plan will execute
             inputs:
               provider: 'azurerm'
               command: 'plan'
